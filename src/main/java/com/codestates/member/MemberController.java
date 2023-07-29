@@ -14,7 +14,7 @@ import java.util.Map;
 
 //클라이언트의 요청을 처리하는 핸들러 메서드를 매핑해준다.
 //또한 클래스 전체에서 사용되는 공통 URL 설정을 한다.
-@RequestMapping(value = "/v1/members", produces = {MediaType.APPLICATION_JSON_VALUE}) //JSON 형식으로 응답 데이터를 전송하기 위한 설정
+@RequestMapping("/v1/members") //JSON 형식으로 응답 데이터를 전송하기 위한 설정
 
 public class MemberController {
     @PostMapping //클라이언트의 request body를 서버에 생성할 때 사용하는 애너테이션
@@ -27,12 +27,26 @@ public class MemberController {
         System.out.println("# name: " + name);
         System.out.println("# phone: " + phone);
 
-        Map<String,String> map = new HashMap<>();
-        map.put("email",email);
-        map.put("name",name);
-        map.put("phone",phone);
+        Map<String,String> body = new HashMap<>();
+        body.put("email",email);
+        body.put("name",name);
+        body.put("phone",phone);
 
-        return new ResponseEntity<>(map, HttpStatus.CREATED);
+        return new ResponseEntity<>(body, HttpStatus.CREATED);
+    }
+
+    //서버의 리소스를 수정할 때 사용하는 애너테이션
+    @PatchMapping("/{member-id}")
+    public ResponseEntity patchMember(@PathVariable("member-id")long memberId,
+                                      @RequestParam String phone) {
+        Map<String,String> body = new HashMap<>();
+        body.put("memberId", String.valueOf(memberId));
+        body.put("email","hgd@gmail.com");
+        body.put("name","홍길동");
+        body.put("phone",phone);
+
+        return new ResponseEntity<>(body, HttpStatus.CREATED);
+
     }
 
     //클라이언트가 서버에 리소스를 조회할 때 사용하는 애너테이션
@@ -52,5 +66,10 @@ public class MemberController {
         System.out.println("# get Members");
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{member-id}") //서버의 리소스를 지울 때 사용하는 애너테이션
+    public ResponseEntity deleteMember(@PathVariable("member-id")long memberId) {
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }
